@@ -1,0 +1,8 @@
+cba rank:
+https://api-cba.9h-sports.com/api/League/GetRankList/2
+
+nba leader stats
+https://stats.nba.com/js/data/widgets/home_season.json
+
+cba player stats
+https://api-cba.9h-sports.com/api/League/GetPlayerStat?leagueId=2&year=20172018

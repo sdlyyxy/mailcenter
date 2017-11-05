@@ -1,6 +1,6 @@
 import sqlite3,urllib.request,json,datetime,time
 
-dbroot='/root/project/mailcenter'
+dbroot='/root/project/mailcenter/'
 def process(url):
     response=urllib.request.urlopen(url)
     s = str(response.read(), encoding="utf8")
