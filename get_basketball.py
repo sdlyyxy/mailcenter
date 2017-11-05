@@ -1,6 +1,8 @@
-import sqlite3,urllib.request,json,datetime,time
+import sqlite3,urllib.request,json,datetime,time,password_ini
 
-dbroot='/root/project/mailcenter/'
+# todO:uncomment cba data collect
+
+dbroot=password_ini.dbroot
 def process(url):
     response=urllib.request.urlopen(url)
     s = str(response.read(), encoding="utf8")
@@ -18,10 +20,10 @@ def process(url):
             conn.commit()
             conn.close()
     
-for i in range(1,38+1):
-    print(i)
-    url='https://api-cba.9h-sports.com/api/League/GetMatchCurrent?year=20172018&round=%s'%i
-    process(url)
+# for i in range(1,38+1):
+#     # print(i)
+#     url='https://api-cba.9h-sports.com/api/League/GetMatchCurrent?year=20172018&round=%s'%i
+#     process(url)
 
 def teamIDConvert(name):
     dic = {'ATL': '老鹰', 'MIA': '热火', 'BKN': '篮网', 'MIL': '雄鹿',
@@ -54,32 +56,40 @@ urlDayStr=nbaday.strftime("%Y/%m/%d")
 
 import urllib.request
 import json,sqlite3
+
+datedelta=datetime.timedelta(days=1)
+today=(datetime.datetime.now()-datedelta).strftime("%Y-%m-%d")
+
+
 response = urllib.request.urlopen(
     "http://api.suredbits.com/nba/v0/games/"+urlDayStr)
 s = str(response.read(), encoding="utf8")
 data = json.loads(s)
 
-mailcontent = '%s NBA 比赛结果\n'%urlDayStr
+mailcontent='<meta charset="utf8">'
+
+mailcontent += '<h2>%s NBA 比赛结果</h2>\n'%today
 for i in data:
     if not i['finished']:
         continue
     # mailcontent = mailcontent + teamIDConvert(i['homeTeam']['teamID']) + ' ' + "%s" % i['homeTeam']['finalScore']\
     #     + '  :  ' + "%s" % i['awayTeam']['finalScore'] + \
     #     ' ' + teamIDConvert(i['awayTeam']['teamID']) + '\n'
-    mailcontent+='%s|%s %s:%s\n'%(teamIDConvert(i['homeTeam']['teamID']),teamIDConvert(i['awayTeam']['teamID']),i['homeTeam']['finalScore'],i['awayTeam']['finalScore'])
+    mailcontent+='%s|%s %s:%s<br>\n'%(teamIDConvert(i['homeTeam']['teamID']),teamIDConvert(i['awayTeam']['teamID']),i['homeTeam']['finalScore'],i['awayTeam']['finalScore'])
 
 # print(mailcontent)
 
 mailcontent+='\n\n'
 
+mailcontent+="<h2>%s CBA 比赛结果</h2>\n"%today
+conn=sqlite3.connect(dbroot+'cba.db')
+c=conn.cursor()
+res=c.execute('select * from matches where date="%s"'%today)
+for i in res:
+    mailcontent+='%s|%s %s:%s<br>\n'%(i[0],i[1],i[2],i[3])
 
-httpheader = {
-    'User-Agent': r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                  r'Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3',
-    'Referer': r'http://www.lagou.com/zhaopin/Python/?labelWords=label',
-    'Connection': 'keep-alive'
-}
-# req=urllib.request.Request(url,headers=httpheader)
+mailcontent+='\n'
+
 response = urllib.request.urlopen(
     "http://china.nba.com/static/data/season/conferencestanding.json")
 s = str(response.read(), encoding="utf8")
@@ -89,16 +99,16 @@ teams=[]
 for i in data[0]['teams']:
     teams+=[[i['profile']['name'],i['standings']['confRank'],i['standings']['wins'],i['standings']['losses'],i['standings']['streak'][2:]+'连'+i['standings']['streak'][0]]]
 teams.sort(key=lambda x:x[1])
-mailcontent+=datetime.datetime.now().strftime('%Y/%m/%d')+'联盟排名\n'
-mailcontent+='东部排名\n'
+mailcontent+="<h2>"+datetime.datetime.now().strftime('%Y/%m/%d %H:%M ')+'NBA联盟排名</h2>\n'
+mailcontent+='<h4>东部排名</h4><table>\n'
 for i in teams:
-    if(i[0]=='凯尔特人'):
-        tmp="%s\t%s%s\t%s\t%s\n"%(i[1],i[0],i[2],i[3],i[4])
-        mailcontent+=tmp
-        # print()
-        continue
+    # if(i[0]=='凯尔特人'):
+    #     tmp="%s\t%s%s\t%s\t%s\n"%(i[1],i[0],i[2],i[3],i[4])
+    #     mailcontent+=tmp
+    #     # print()
+    #     continue
     
-    tmp="%s\t%s\t%s\t%s\t%s\n"%(i[1],i[0],i[2],i[3],i[4])
+    tmp="<tr><td>%s</td><td>%s</td><td>%s胜</td><td>%s负</td><td>%s</td></tr>"%(i[1],i[0],i[2],i[3],i[4])
     mailcontent+=tmp
     # print(tmp)
 
@@ -106,71 +116,12 @@ teams=[]
 for i in data[1]['teams']:
     teams+=[[i['profile']['name'],i['standings']['confRank'],i['standings']['wins'],i['standings']['losses'],i['standings']['streak'][2:]+'连'+i['standings']['streak'][0]]]
 teams.sort(key=lambda x:x[1])
-mailcontent+='\n西部排名\n'
+mailcontent+='\n</table><h4>西部排名</h4><table>\n'
 for i in teams:
-    if(i[0]=='凯尔特人'):
-        tmp="%s\t%s%s\t%s\t%s\n"%(i[1],i[0],i[2],i[3],i[4])
-        mailcontent+=tmp
-        # print()
-        continue
-    
-    tmp="%s\t%s\t%s\t%s\t%s\n"%(i[1],i[0],i[2],i[3],i[4])
+    tmp="<tr><td>%s</td><td>%s</td><td>%s胜</td><td>%s负</td><td>%s</td></tr>"%(i[1],i[0],i[2],i[3],i[4])
     mailcontent+=tmp
     # print(tmp)
 
-datedelta=datetime.timedelta(days=1)
-today=(datetime.datetime.now()-datedelta).strftime("%Y-%m-%d")
-mailcontent+="\n\n%s CBA 比赛结果\n"%today
-conn=sqlite3.connect(dbroot+'cba.db')
-c=conn.cursor()
-res=c.execute('select * from matches where date="%s"'%today)
-for i in res:
-    mailcontent+='%s|%s %s:%s\n'%(i[0],i[1],i[2],i[3])
+mailcontent+='</table>'
 
 print(mailcontent)
-
-from email import encoders
-from email.header import Header
-from email.mime.text import MIMEText
-from email.utils import parseaddr, formataddr
-
-import smtplib
-
-def _format_addr(s):
-    name, addr = parseaddr(s)
-    return formataddr((Header(name, 'utf-8').encode(), addr))
-
-# from_addr = input('From: ')
-# password = input('Password: ')
-# to_addr = input('To: ')
-# smtp_server = input('SMTP server: ')
-
-from_addr = 'qq827062223@me.com'
-# from_addr = input('From: ')
-password = 'kcow-twvw-wwsf-vwme'
-# 输入收件人地址:
-to_addr = 'sdlyyxy@icloud.com'
-# 输入SMTP服务器地址:
-smtp_server = 'smtp.mail.me.com'
-smtp_port = 587
-server = smtplib.SMTP(smtp_server, smtp_port)
-server.starttls()
-# from_addr = 'yxy9851@sina.com'
-# # from_addr = input('From: ')
-
-# # 输入收件人地址:
-# to_addr = 'sdlyyxy@me.com'
-# # 输入SMTP服务器地址:
-# smtp_server = 'smtp.sina.com'
-
-
-msg = MIMEText(mailcontent, 'plain', 'utf-8')
-msg['From'] = _format_addr('sdlyyxy <%s>' % from_addr)
-msg['To'] = _format_addr('sdlyyxy <%s>' % to_addr)
-msg['Subject'] = Header('%s 赛事动态'%today, 'utf-8').encode()
-
-# server = smtplib.SMTP(smtp_server, 25)
-server.set_debuglevel(1)
-server.login(from_addr, password)
-server.sendmail(from_addr, [to_addr], msg.as_string())
-server.quit()
