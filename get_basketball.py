@@ -20,10 +20,10 @@ def process(url):
             conn.commit()
             conn.close()
     
-# for i in range(1,38+1):
-#     # print(i)
-#     url='https://api-cba.9h-sports.com/api/League/GetMatchCurrent?year=20172018&round=%s'%i
-#     process(url)
+for i in range(1,38+1):
+    # print(i)
+    url='https://api-cba.9h-sports.com/api/League/GetMatchCurrent?year=20172018&round=%s'%i
+    process(url)
 
 def teamIDConvert(name):
     dic = {'ATL': '老鹰', 'MIA': '热火', 'BKN': '篮网', 'MIL': '雄鹿',
@@ -124,4 +124,54 @@ for i in teams:
 
 mailcontent+='</table>'
 
-print(mailcontent)
+mailcontent+="<h2>"+datetime.datetime.now().strftime('%Y/%m/%d %H:%M ')+'CBA联盟排名</h2><table>\n'
+response = urllib.request.urlopen(
+    "https://api-cba.9h-sports.com/api/League/GetRankList/2")
+s = str(response.read(), encoding="utf8")
+data = json.loads(s)
+for i in data['data']:
+    tmp="<tr><td>%s</td><td>%s</td><td>%s胜</td><td>%s负</td></tr>"%(i['order'],i['name'],i['wins'],i['loses'])
+    mailcontent+=tmp
+
+mailcontent+='</table>'
+
+response = urllib.request.urlopen(
+    "https://stats.nba.com/js/data/widgets/home_season.json")
+s = str(response.read(), encoding="utf8")
+data = json.loads(s)
+mailcontent+='<h3>NBA 得分榜</h3><table>'
+for i in data['items'][0]['items'][0]['playerstats']:
+    mailcontent+='<tr><td>%s</td><td>%s</td><td>%s</td></tr>'%(i['PLAYER_NAME'],i['TEAM_ABBREVIATION'],i['PTS'])
+mailcontent+='</table>'
+
+mailcontent+='<h3>NBA 篮板榜</h3>'
+
+mailcontent+='<table>'
+for i in data['items'][0]['items'][1]['playerstats']:
+    mailcontent+='<tr><td>%s</td><td>%s</td><td>%s</td></tr>'%(i['PLAYER_NAME'],i['TEAM_ABBREVIATION'],i['REB'])
+mailcontent+='</table>'
+
+
+
+mailcontent+='<h3>NBA 助攻榜</h3>'
+mailcontent+='<table>'
+for i in data['items'][0]['items'][2]['playerstats']:
+    mailcontent+='<tr><td>%s</td><td>%s</td><td>%s</td></tr>'%(i['PLAYER_NAME'],i['TEAM_ABBREVIATION'],i['AST'])
+mailcontent+='</table>'
+
+
+mailcontent+='<h3>NBA 盖帽榜</h3>'
+mailcontent+='<table>'
+for i in data['items'][0]['items'][3]['playerstats']:
+    mailcontent+='<tr><td>%s</td><td>%s</td><td>%s</td></tr>'%(i['PLAYER_NAME'],i['TEAM_ABBREVIATION'],i['BLK'])
+mailcontent+='</table>'
+
+
+mailcontent+='<h3>NBA 抢断榜</h3>'
+mailcontent+='<table>'
+for i in data['items'][0]['items'][4]['playerstats']:
+    mailcontent+='<tr><td>%s</td><td>%s</td><td>%s</td></tr>'%(i['PLAYER_NAME'],i['TEAM_ABBREVIATION'],i['STL'])
+mailcontent+='</table>'
+
+
+# print(mailcontent)

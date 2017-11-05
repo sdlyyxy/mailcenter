@@ -21,6 +21,9 @@ def send(subject,content):
     smtp_port = 587
     server = smtplib.SMTP(smtp_server, smtp_port)
     server.starttls()
+    content+='''
+    <br><br><br><br><hr>Proudly presented by <a href="mailto:sdlyyxy@icloud.com">sdlyyxy（燕新宇）</a>, project <a href='https://github.com/sdlyyxy/mailcenter'>mailcenter</a>.
+    '''
     msg = MIMEText(content, 'html', 'utf-8')    
     msg['From'] = _format_addr('sdlyyxy <%s>' % from_addr)
     msg['To'] = _format_addr('sdlyyxy <sdlyyxy@icloud.com>')
