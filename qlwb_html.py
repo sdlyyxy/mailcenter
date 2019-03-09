@@ -45,7 +45,7 @@ finalhtml='''
     font-size: 24px;
 }
 #contenttext img{
-    width:80%;
+    width:95%;
     height:auto;
 }
 </style>
