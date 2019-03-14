@@ -1,0 +1,54 @@
+from email import encoders
+from email.header import Header
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.utils import parseaddr, formataddr
+import smtplib
+import password_ini
+import to_addrs
+
+
+def _format_addr(s):
+    name, addr = parseaddr(s)
+    return formataddr((Header(name, 'utf-8').encode(), addr))
+
+
+# server = smtplib.SMTP(smtp_server, 25)
+
+def send(subject,content,filename):
+    from_addr = 'qq827062223@me.com'
+    password = password_ini.mailpassword
+    smtp_server = 'smtp.mail.me.com'
+    smtp_port = 587
+    server = smtplib.SMTP(smtp_server, smtp_port)
+    server.starttls()
+    content+='''
+    <br><br><br><br><hr>Proudly presented by <a href="mailto:sdlyyxy@icloud.com">sdlyyxy（燕新宇）</a>, project <a href='https://github.com/sdlyyxy/mailcenter'>mailcenter</a>.
+    '''
+    msg = MIMEText(content, 'html', 'utf-8')    
+    msg['From'] = _format_addr('sdlyyxy <%s>' % from_addr)
+    msg['To'] = _format_addr('sdlyyxy <sdlyyxy@icloud.com>')
+    msg['Subject'] = Header(subject, 'utf-8').encode()
+    if filename=='':
+        server.set_debuglevel(1)
+        server.login(from_addr, password)
+        server.sendmail(from_addr, to_addrs.addrs, msg.as_string())
+        server.quit()
+    else:
+        # print(filename)
+        message = MIMEMultipart()
+        message['From']=msg['From']
+        message['To']=msg['To']
+        message['Subject']=msg['Subject']
+        message.attach(msg);
+        filecontent=open(filename, 'rb').read()
+        att1 = MIMEText(filecontent, 'base64', 'utf-8')
+        # print('att=%s',filecontent)
+        att1["Content-Type"] = 'application/zip'
+        # att1["Content-Type"] = 'text/html'
+        att1["Content-Disposition"] = 'attachment; filename="qlwb.zip"'
+        message.attach(att1)
+        server.set_debuglevel(1)
+        server.login(from_addr, password)
+        server.sendmail(from_addr, to_addrs.addrs, message.as_string())
+        server.quit()       
