@@ -33,7 +33,7 @@ _date=alldates[lastdate]
 d_request = urllib2.Request(index+_date)
 d_request.add_header('User-Agent', header)
 d_html = urllib2.urlopen(d_request).read()
-d_pattern=re.compile(r'/qlwb/content/(......../Articel.........htm)')#article articel?
+d_pattern=re.compile(r'/qlwb/content/(......../ArticelA........htm)')#article articel?
 d_match=d_pattern.findall(d_html)
 # d_pages=len(d_match)
 finalhtml='''
