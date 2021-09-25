@@ -5,6 +5,7 @@ import json
 import datetime
 import time
 import re
+import password_ini
 
 
 'todo: change day delta(4 places)'
@@ -23,15 +24,20 @@ def getInform(i):
     datepattern = (datetime.datetime.now() -
                    datetime.timedelta(days=1)).strftime('%Y年%m月%d日')
     # print(datepattern)
-    response = urllib.request.urlopen(_url)
+    response = urllib.request.Request(_url)
+    response.add_header("Cookie", password_ini.httpcookie)
+    response=urllib.request.urlopen(response)
     s = str(response.read(), encoding="utf8")
     if i==1:
+        # print("page 1 content:\n%s"%s)
         res_tr = r'<body >(.*?)</body>'
         m_tr =  re.findall(res_tr,s,re.S|re.M)
-        ress=m_tr[0]
+        if len(m_tr)>0:
+            ress=m_tr[0]
         # print(ress)
         ress=ress.replace('/extensions/wap/news/detail.html','https://webapp.bupt.edu.cn//extensions/wap/news/detail.html')
         # print(ress)
+        ress=re.sub(r"<p onclick=\"window.location='(.*)'\">",r'<a href="\1">',ress)
         return ress
     data = json.loads(s)
     # print(data['data'].keys())
@@ -48,7 +54,9 @@ def getNews(i):
     datepattern = (datetime.datetime.now() -
                    datetime.timedelta(days=1)).strftime('%Y年%m月%d日')
     # print(datepattern)
-    response = urllib.request.urlopen(_url)
+    response = urllib.request.Request(_url)
+    response.add_header("Cookie", password_ini.httpcookie)
+    response=urllib.request.urlopen(response)
     s = str(response.read(), encoding="utf8")
     data = json.loads(s)
     # print(data['data'].keys())

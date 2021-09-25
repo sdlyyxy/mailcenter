@@ -15,12 +15,12 @@ def _format_addr(s):
 # server = smtplib.SMTP(smtp_server, 25)
 
 def send(subject,content):
-    # from_addr = 'qq827062223@me.com'
-    from_addr='827062223@qq.com'
+    from_addr = 'qq827062223@me.com'
+    # from_addr='827062223@qq.com'
     # from_addr='sdlyyxy@sina.com'
     password = password_ini.mailpassword
-    # smtp_server = 'smtp.mail.me.com'
-    smtp_server='smtp.qq.com'
+    smtp_server = 'smtp.mail.me.com'
+    # smtp_server='smtp.qq.com'
     # smtp_server='smtp.sina.com'
     smtp_port = 587
     server = smtplib.SMTP(smtp_server, smtp_port)
@@ -29,7 +29,7 @@ def send(subject,content):
     <br><br><br><br><hr>Proudly presented by <a href="mailto:sdlyyxy@icloud.com">sdlyyxy（燕新宇）</a>, project <a href='https://github.com/sdlyyxy/mailcenter'>mailcenter</a>.
     '''
     msg = MIMEText(content, 'html', 'utf-8')    
-    msg['From'] = _format_addr('sdlyyxy <%s>' % from_addr)
+    msg['From'] = _format_addr('mailcenter <%s>' % from_addr)
     msg['To'] = _format_addr('sdlyyxy <sdlyyxy@icloud.com>')
     msg['Subject'] = Header(subject, 'utf-8').encode()
     server.set_debuglevel(1)
