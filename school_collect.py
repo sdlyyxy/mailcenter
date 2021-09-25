@@ -37,6 +37,7 @@ def getInform(i):
         # print(ress)
         ress=ress.replace('/extensions/wap/news/detail.html','https://webapp.bupt.edu.cn//extensions/wap/news/detail.html')
         # print(ress)
+        ress=re.sub(r"<p onclick=\"window.location='(.*)'\">",r'<a href="\1">',ress)
         return ress
     data = json.loads(s)
     # print(data['data'].keys())
