@@ -2,6 +2,7 @@
 import school_collect
 import send_html_mail
 import datetime
+import get_weibo
 import os
 
 datedelta=datetime.timedelta(days=1)
@@ -14,5 +15,6 @@ paper_today=datetime.datetime.now().strftime("%Y-%m-%d")
 # send_html_mail.send(get_basketball.today+" 篮球动态",get_basketball.mailcontent)
 # send_html_mail.send(paper_today+" 齐鲁晚报",open('/home/ubuntu/project/mailcenter/qlwb.html').read())
 
-send_html_mail.send(today+' 伟大北邮新建设',school_collect.ress)
+send_html_mail.send(today+' 伟大北邮新建设',school_collect.ress,True)
+send_html_mail.send(paper_today+' 微博速报',get_weibo.res,False)
 # print(school_collect.ress)

@@ -14,7 +14,7 @@ def _format_addr(s):
 
 # server = smtplib.SMTP(smtp_server, 25)
 
-def send(subject,content):
+def send(subject,content,ishtml):
     from_addr = 'qq827062223@me.com'
     # from_addr='827062223@qq.com'
     # from_addr='sdlyyxy@sina.com'
@@ -28,7 +28,10 @@ def send(subject,content):
     content+='''
     <br><br><br><br><hr>Proudly presented by <a href="mailto:sdlyyxy@icloud.com">sdlyyxy（燕新宇）</a>, project <a href='https://github.com/sdlyyxy/mailcenter'>mailcenter</a>.
     '''
-    msg = MIMEText(content, 'html', 'utf-8')    
+    if ishtml:
+        msg = MIMEText(content, 'html', 'utf-8')    
+    else:
+        msg = MIMEText(content, 'plain', 'utf-8')  
     msg['From'] = _format_addr('mailcenter <%s>' % from_addr)
     msg['To'] = _format_addr('sdlyyxy <sdlyyxy@icloud.com>')
     msg['Subject'] = Header(subject, 'utf-8').encode()
