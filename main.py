@@ -16,5 +16,5 @@ paper_today=datetime.datetime.now().strftime("%Y-%m-%d")
 # send_html_mail.send(paper_today+" 齐鲁晚报",open('/home/ubuntu/project/mailcenter/qlwb.html').read())
 
 send_html_mail.send(today+' 伟大北邮新建设',school_collect.ress,True)
-send_html_mail.send(paper_today+' 微博速报',get_weibo.res,False)
+send_html_mail.send(today+' 微博速报',get_weibo.res,True)
 # print(school_collect.ress)
