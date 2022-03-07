@@ -3,6 +3,7 @@ import school_collect
 import send_html_mail
 import datetime
 import get_weibo
+import get_hupu
 import os
 
 datedelta=datetime.timedelta(days=1)
@@ -17,5 +18,7 @@ paper_today=datetime.datetime.now().strftime("%Y-%m-%d")
 
 send_html_mail.send(today+' 伟大北邮新建设',school_collect.ress,True)
 send_html_mail.send(today+' 微博速报',get_weibo.res,True)
+send_html_mail.send(paper_today+' 虎扑速报',get_hupu.res,True)
 # print(school_collect.ress)
 # print(get_weibo.res)
+# print(get_hupu.res)
