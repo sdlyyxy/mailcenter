@@ -25,7 +25,12 @@ def getWeiboByID(userid):
             break
         res=res+u'<a href="https://m.weibo.cn/detail/%s">https://m.weibo.cn/detail/%s</a>'%(status.id,status.id)+"</br>"
         res=res+u"发布时间：{}".format(dt.strftime("%Y年%m月%d日 %H:%M:%S"))+"</br>"
-        res=res+u"正文内容：{}".format(status.longTextContent)+"</br>"
+        mainContent=""
+        try:
+            mainContent=status.longTextContent
+        except:
+            mainContent=status.text
+        res=res+u"正文内容：{}".format(mainContent)+"</br>"
         for url in status.pic_urls:
             res+='<img src="%s" alt="Weibo Image Cannot be loaded..."></br></br>'%url
             # res+='<div style="width:240"><img src="%s" alt="Weibo Image Cannot be loaded..." style="width:100%%;height:auto"></div></br></br>'%url
@@ -35,8 +40,10 @@ def getWeiboByID(userid):
             res=res+'<a href="https://m.weibo.cn/detail/%s">原推：%s：</a>%s</br>'%(status.retweeted_status.get("id"),status.retweeted_status.get("user").get("screen_name"),p.longTextContent)
             for pic in status.retweeted_status.get('pics', []):
                 res+='<img src="%s" alt="Weibo Image Cannot be loaded..."></br></br>'%(pic.get('url'))
-
-        res+="转发：%s  评论：%s 点赞：%s</br>"%(status.reposts_count,status.comments_count,status.attitudes_count)
+        try:
+            res+="转发：%s  评论：%s 点赞：%s</br>"%(status.reposts_count,status.comments_count,status.attitudes_count)
+        except:
+            res+="这条微博无法抓取，请手动查看。</br>"
         res=res+"</br></br></br>"
     res+="</br></br></br>"
 
