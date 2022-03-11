@@ -1,10 +1,21 @@
 import userids
 import datetime
 from weibo_api.client import WeiboClient
-
+# import pdb
 datedelta=datetime.timedelta(days=1)
 today=(datetime.datetime.now()-datedelta).date()
 
+def safelyGetText(status):
+    mainContent=""
+    try:
+        mainContent=status.longTextContent
+    except:
+        try:
+            mainContent=status.text
+        except:
+            mainContent="Text content of this Weibo cannot be fetched.\n"
+            # pdb.set_trace()
+    return mainContent
 
 def getWeiboByID(userid):
     client = WeiboClient() 
@@ -25,19 +36,14 @@ def getWeiboByID(userid):
             break
         res=res+u'<a href="https://m.weibo.cn/detail/%s">https://m.weibo.cn/detail/%s</a>'%(status.id,status.id)+"</br>"
         res=res+u"发布时间：{}".format(dt.strftime("%Y年%m月%d日 %H:%M:%S"))+"</br>"
-        mainContent=""
-        try:
-            mainContent=status.longTextContent
-        except:
-            mainContent=status.text
-        res=res+u"正文内容：{}".format(mainContent)+"</br>"
+        res=res+u"正文内容：{}".format(safelyGetText(status))+"</br>"
         for url in status.pic_urls:
             res+='<img src="%s" alt="Weibo Image Cannot be loaded..."></br></br>'%url
             # res+='<div style="width:240"><img src="%s" alt="Weibo Image Cannot be loaded..." style="width:100%%;height:auto"></div></br></br>'%url
         if status.retweeted_status:
             cl = WeiboClient() 
             p = cl.status(status.retweeted_status.get("id"))
-            res=res+'<a href="https://m.weibo.cn/detail/%s">原推：%s：</a>%s</br>'%(status.retweeted_status.get("id"),status.retweeted_status.get("user").get("screen_name"),p.longTextContent)
+            res=res+'<a href="https://m.weibo.cn/detail/%s">原推：%s：</a>%s</br>'%(status.retweeted_status.get("id"),status.retweeted_status.get("user").get("screen_name"),safelyGetText(p))
             for pic in status.retweeted_status.get('pics', []):
                 res+='<img src="%s" alt="Weibo Image Cannot be loaded..."></br></br>'%(pic.get('url'))
         try:
