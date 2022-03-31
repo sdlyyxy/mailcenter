@@ -36,16 +36,24 @@ def getWeiboByID(userid):
             break
         res=res+u'<a href="https://m.weibo.cn/detail/%s">https://m.weibo.cn/detail/%s</a>'%(status.id,status.id)+"</br>"
         res=res+u"发布时间：{}".format(dt.strftime("%Y年%m月%d日 %H:%M:%S"))+"</br>"
-        res=res+u"正文内容：{}".format(safelyGetText(status))+"</br>"
+        res=res+'<a href="https://m.weibo.cn/u/%s">%s</a>'%(userid,p.name)
+        res=res+u"：{}".format(safelyGetText(status))+"</br>"
         for url in status.pic_urls:
             res+='<img src="%s" alt="Weibo Image Cannot be loaded..."></br></br>'%url
             # res+='<div style="width:240"><img src="%s" alt="Weibo Image Cannot be loaded..." style="width:100%%;height:auto"></div></br></br>'%url
         if status.retweeted_status:
-            cl = WeiboClient() 
-            p = cl.status(status.retweeted_status.get("id"))
-            res=res+'<a href="https://m.weibo.cn/detail/%s">原推：%s：</a>%s</br>'%(status.retweeted_status.get("id"),status.retweeted_status.get("user").get("screen_name"),safelyGetText(p))
-            for pic in status.retweeted_status.get('pics', []):
-                res+='<img src="%s" alt="Weibo Image Cannot be loaded..."></br></br>'%(pic.get('url'))
+            try:
+                cl = WeiboClient() 
+                pp = cl.status(status.retweeted_status.get("id"))
+                res=res+'<a href="https://m.weibo.cn/detail/%s">原推：%s：</a>%s</br>'%(status.retweeted_status.get("id"),status.retweeted_status.get("user").get("screen_name"),safelyGetText(pp))
+                for pic in status.retweeted_status.get('pics', []):
+                    res+='<img src="%s" alt="Weibo Image Cannot be loaded..."></br></br>'%(pic.get('url'))
+            except:
+                res+="原推获取异常</br>"
+        # 原推可能出现的问题：抱歉，由于作者设置，你暂时没有这条微博的查看权限哦。查看帮助： 网页链接，导致：
+        #   File "/home/bupt/projects/mailcenter/get_weibo.py", line 46, in getWeiboByID
+        # res=res+'<a href="https://m.weibo.cn/detail/%s">原推：%s：</a>%s</br>'%(status.retweeted_status.get("id"),status.retweeted_status.get("user").get("screen_name"),safelyGetText(p))
+        # AttributeError: 'NoneType' object has no attribute 'get'
         try:
             res+="转发：%s  评论：%s 点赞：%s</br>"%(status.reposts_count,status.comments_count,status.attitudes_count)
         except:
