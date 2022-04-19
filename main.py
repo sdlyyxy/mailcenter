@@ -1,5 +1,9 @@
 # import get_basketball
-import school_collect
+import sys
+try:
+    import school_collect
+except:
+    print("school_collect import error",file=sys.stderr)
 import send_html_mail
 import datetime
 import get_weibo
@@ -16,7 +20,10 @@ paper_today=datetime.datetime.now().strftime("%Y-%m-%d")
 # send_html_mail.send(get_basketball.today+" 篮球动态",get_basketball.mailcontent)
 # send_html_mail.send(paper_today+" 齐鲁晚报",open('/home/ubuntu/project/mailcenter/qlwb.html').read())
 
-send_html_mail.send(today+' 伟大北邮新建设',school_collect.ress,True)
+try:
+    send_html_mail.send(today+' 伟大北邮新建设',school_collect.ress,True)
+except:
+    print("School error",file=sys.stderr)
 send_html_mail.send(today+' 微博速报',get_weibo.res,True)
 send_html_mail.send(paper_today+' 虎扑速报',get_hupu.res,True)
 # print(school_collect.ress)

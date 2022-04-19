@@ -6,6 +6,15 @@ import datetime
 import time
 import re
 import password_ini
+from tenacity import retry
+from tenacity import stop_after_attempt
+from tenacity import wait_fixed
+
+# @retry(stop=stop_after_attempt(7),wait=wait_fixed(3))
+def urlopen_with_retry(request):
+    return urllib.request.urlopen(request)
+
+
 
 
 'todo: change day delta(4 places)'
@@ -26,7 +35,8 @@ def getInform(i):
     # print(datepattern)
     response = urllib.request.Request(_url)
     response.add_header("Cookie", password_ini.httpcookie)
-    response=urllib.request.urlopen(response)
+    # response=urllib.request.urlopen(response)
+    response=urlopen_with_retry(response)
     s = str(response.read(), encoding="utf8")
     if i==1:
         # print("page 1 content:\n%s"%s)
@@ -56,7 +66,8 @@ def getNews(i):
     # print(datepattern)
     response = urllib.request.Request(_url)
     response.add_header("Cookie", password_ini.httpcookie)
-    response=urllib.request.urlopen(response)
+    # response=urllib.request.urlopen(response)
+    response=urlopen_with_retry(response)
     s = str(response.read(), encoding="utf8")
     data = json.loads(s)
     # print(data['data'].keys())
