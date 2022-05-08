@@ -1,5 +1,8 @@
 import userids
 import datetime
+from tenacity import retry
+from tenacity import stop_after_attempt
+from tenacity import wait_fixed
 from weibo_api.client import WeiboClient
 # import pdb
 datedelta=datetime.timedelta(days=1)
@@ -17,6 +20,7 @@ def safelyGetText(status):
             # pdb.set_trace()
     return mainContent
 
+@retry(stop=stop_after_attempt(7),wait=wait_fixed(10))
 def getWeiboByID(userid):
     client = WeiboClient() 
     res=""

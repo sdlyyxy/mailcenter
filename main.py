@@ -6,7 +6,10 @@ except:
     print("school_collect import error",file=sys.stderr)
 import send_html_mail
 import datetime
-import get_weibo
+try:
+    import get_weibo
+except:
+    print("get_weibo import error",file=sys.stderr)
 import get_hupu
 import os
 
@@ -24,7 +27,10 @@ try:
     send_html_mail.send(today+' 伟大北邮新建设',school_collect.ress,True)
 except:
     print("School error",file=sys.stderr)
-send_html_mail.send(today+' 微博速报',get_weibo.res,True)
+try:
+    send_html_mail.send(today+' 微博速报',get_weibo.res,True)
+except:
+    print("Weibo error",file=sys.stderr)
 send_html_mail.send(paper_today+' 虎扑速报',get_hupu.res,True)
 # print(school_collect.ress)
 # print(get_weibo.res)
