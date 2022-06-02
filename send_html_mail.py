@@ -2,6 +2,9 @@ from email import encoders
 from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
+from tenacity import retry
+from tenacity import stop_after_attempt
+from tenacity import wait_fixed
 import smtplib
 import password_ini
 import to_addrs
@@ -14,14 +17,15 @@ def _format_addr(s):
 
 # server = smtplib.SMTP(smtp_server, 25)
 
+@retry(stop=stop_after_attempt(20),wait=wait_fixed(200))
 def send(subject,content,ishtml):
     # from_addr = 'qq827062223@me.com'
-    from_addr='827062223@qq.com'
-    # from_addr='sdlyyxy@sina.com'
+    # from_addr='827062223@qq.com'
+    from_addr='sdlyyxy@sina.com'
     password = password_ini.mailpassword
     # smtp_server = 'smtp.mail.me.com'
-    smtp_server='smtp.qq.com'
-    # smtp_server='smtp.sina.com'
+    # smtp_server='smtp.qq.com'
+    smtp_server='smtp.sina.com'
     smtp_port = 587
     server = smtplib.SMTP(smtp_server, smtp_port)
     server.starttls()

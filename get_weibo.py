@@ -20,7 +20,7 @@ def safelyGetText(status):
             # pdb.set_trace()
     return mainContent
 
-@retry(stop=stop_after_attempt(7),wait=wait_fixed(10))
+@retry(stop=stop_after_attempt(20),wait=wait_fixed(200))
 def getWeiboByID(userid):
     client = WeiboClient() 
     res=""
