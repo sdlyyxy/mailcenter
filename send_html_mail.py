@@ -21,14 +21,17 @@ def _format_addr(s):
 def send(subject,content,ishtml):
     # from_addr = 'qq827062223@me.com'
     # from_addr='827062223@qq.com'
-    from_addr='sdlyyxy@sina.com'
+    # from_addr='sdlyyxy@sina.com'
+    from_addr='sdlyyxy@bupt.edu.cn'
     password = password_ini.mailpassword
     # smtp_server = 'smtp.mail.me.com'
     # smtp_server='smtp.qq.com'
-    smtp_server='smtp.sina.com'
-    smtp_port = 587
-    server = smtplib.SMTP(smtp_server, smtp_port)
-    server.starttls()
+    # smtp_server='smtp.sina.com'
+    smtp_server='smtp.exmail.qq.com'
+    # smtp_port = 587
+    smtp_port = 465
+    server = smtplib.SMTP_SSL(smtp_server, smtp_port)
+    # server.starttls()
     content+='''
     <br><br><br><br><hr>Proudly presented by <a href="mailto:sdlyyxy@icloud.com">sdlyyxy（燕新宇）</a>, project <a href='https://github.com/sdlyyxy/mailcenter'>mailcenter</a>.
     '''
